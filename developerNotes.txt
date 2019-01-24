@@ -1,0 +1,11 @@
+Do http GET request to http://httpbin.org/ip 
+read the ip file
+if ip has changed, store ip in ip file with timestamp in .csv format
+
+loop:
+wait some time
+do new GET request
+check if ip has changed
+if ip changed, append to ip file
+if ip changed, do "notofy-send Your IP address has changed"
+
