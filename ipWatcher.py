@@ -1,22 +1,31 @@
 import requests # for http requests
 import time 	# for UTC time and sleep
 import datetime # for date / time formatting
+import subprocess # for linux notifications
 
-logFile = open("ipLog.csv", "a+") # creates the log file if doesnt already exist
+def sendMessage(message):
+    subprocess.Popen(['notify-send', message])
+    return
+
+# creates the log file if doesnt already exist
+logFile = open("ipLog.csv", "a+") 
 logFile.close()
 
+# checks if the ipLog is empty
 fileEmpty = False
 logFile = open("ipLog.csv", "r+")
-print(len(logFile.readlines()))
-if len(logFile.readlines()) == 0:
+numLines = len(logFile.readlines())
+if numLines == 0:
+	print("File was Empty")
 	fileEmpty = True	
 logFile.close()
 
-# TODO: BUG: Always prints data,ip when program is started, should only print if file is empty
+# if the IP log was empty, write the .csv header
 if fileEmpty == True:
 	with open("ipLog.csv", "a+") as ipLog:
 		ipLog.write("date,ip\n")
-	
+
+
 while True:
 	# gets IP address with an http GET request
 	data = requests.get("http://httpbin.org/ip")
@@ -32,13 +41,16 @@ while True:
 	lastLine = ""
 	with open("ipLog.csv", "r") as ipLog:
 		lastLine = ipLog.readlines()[-1]
-		print(lastLine)
 
 	# if IP has changed, log new IP
-	oldIp = lastLine.split(",")[1] + '\n'
-	if oldIp != ip:
-		print(f"oldIp: {oldIp} ip: {ip}")
+	oldIp = lastLine.split(",")[1]
+
+	if oldIp != ip + '\n':
 		with open("ipLog.csv", "a+") as ipLog:
 			timeStamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
 			ipLog.write(timeStamp + "," + ip + '\n')
+			#print(f"{timeStamp} : IP changed")
+			sendMessage("IP changed")
 	time.sleep(5)
+
+
