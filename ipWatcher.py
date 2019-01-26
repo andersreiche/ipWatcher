@@ -51,6 +51,6 @@ while True:
 			ipLog.write(timeStamp + "," + ip + '\n')
 			#print(f"{timeStamp} : IP changed")
 			sendMessage("IP changed")
-	time.sleep(5)
+	time.sleep(60) # wait 1 minute
 
 
